@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Traits\ToStringFormat;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserCredentials;
 use App\Http\Controllers\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+use function Laravel\Prompts\error;
 
 class UserController extends Controller
 {
@@ -23,14 +28,18 @@ class UserController extends Controller
             'username' => 'required|string',
             'password' => 'required|string'
         ]);
-        
-    //     return redirect()->intended('/home');
-    // }
-        if(Auth::attempt($credentials)) {
-            return redirect()->intended('home.page');
-        }
-        else {
-            return redirect()->back()->name('login.page');
+        try {
+            $received = UserCredentials::get(['username', 'password'])
+                        ->where('username', $credentials['username'])
+                        ->firstOrFail()->toArray();
+            if(Hash::check($credentials['password'], $received['password'])) {
+                return redirect()->intended('home');
+            }
+            else
+                return redirect()->back()->with('error', 'Invalid username/password.');
+        } 
+        catch (\Exception $e) {
+            return redirect()->back()->with('error', 'No username found. Please register');
         }
     }
 
@@ -48,7 +57,7 @@ class UserController extends Controller
     * @Register page
     */
     public function registerview() {
-        return view('/components/register');
+        return view('components.register');
     }
     
     // Registering
@@ -58,13 +67,18 @@ class UserController extends Controller
             'username' => 'required',
             'password' =>  'required|confirmed',
         ]);
-        
+        if(UserCredentials::where('username', $request->username)->exists()) {
+            return redirect()->back()->with('error', 'Username already exists. Enter new one');
+        }
+        if(UserCredentials::where('email', $request->email)->exists()) {
+            return redirect()->back()->with('error', 'Email already exists. Enter new one');
+        }
         $user = new  UserCredentials();
         $user->username = $request->username;
         $user->email = $request->email;
-        $user->password = $request->password;
+        $user->password = Hash::make($request->password);
         $user->save();
-        return redirect()->intended('/home')->with('success', '
-        Registration successfully.');
+        return redirect()->intended('home')
+            ->with('success', 'Registration successfully.');
     }
 }

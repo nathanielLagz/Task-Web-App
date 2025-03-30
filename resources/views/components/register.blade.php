@@ -1,4 +1,4 @@
-<x-header>
+<x-layout>
 <title>Register</title>
     <h1>Register your credentials.</h1>
     @if ($errors->any())
@@ -8,6 +8,10 @@
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
+        </div>
+    @elseif (session('error'))
+        <div>
+            {{  session('error') }}
         </div>
     @endif
     <div>
@@ -31,4 +35,4 @@
     <div>
         <a href="{{ route('login.page') }}">Back to Login</a>
     </div>
-</x-header>
+</x-layout>

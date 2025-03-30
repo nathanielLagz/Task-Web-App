@@ -1,17 +1,21 @@
-<x-header>
+<x-layout>
 
 <title>Login Page</title>
 
     <h1>Welcome to Login Page</h1>
-    @if (session('loggedOut')) 
-        <div>
+        @if (session('loggedOut'))
+        <div class="errors">
             {{ session('loggedOut') }}
+        @elseif ($errors->has('username') || $errors->has('password'))
+            Please enter usename/password.
+        @elseif (session('error'))
+            {{ session('error') }}
+        @elseif($errors->any())
+            @foreach ($errors as $error)
+                {{ $error }}
+            @endforeach
+        @endif
         </div>
-    @elseif ($errors->has('username') || $errors->has('password'))
-        <div>
-            Invalid username/password.
-        </div>
-    @endif
     <h4>Enter credentials to log in.</h4>
     <div>
         <form action="{{ route('logging.in') }}" method="post">
@@ -25,5 +29,5 @@
         <a href="{{ route('register.page') }}">Register</a>
     </div>
     
-</x-header>
+</x-layout>
     

@@ -9,11 +9,26 @@ use Illuminate\Http\Request;
  */
 class TaskController extends Controller
 {
-    public function addtaskview() {
-        return view(Task::all());
+    public function index() {
+        $tasks = Task::all();
+        // dd($tasks);
+        return view('home', ['tasks' => Task::get('task_name')]);
     }
 
-    public function add(Request $request) {
+    public function create(Request $request) {
 
     }
+
+    public function read(Request $request) {
+
+    }
+
+    public function update(Request $request) {
+
+    }
+    
+    public function delete(Request $request) {
+
+    }
+    
 }

@@ -20,6 +20,6 @@ Built on Lavarel, React with MySql as database.
     - [MySql](https://www.mysql.com/downloads/)
     - [Composer](https://getcomposer.org/)
 3. Change directory to local repository and run the following command:
- `composer global require laravel/installer `
- `npm install && npm run build`
-  `composer run dev`
+ `composer global require laravel/installer ` <br>
+ `npm install && npm run build` <br>
+  `composer run dev` <br>

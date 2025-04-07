@@ -1,19 +1,7 @@
 <x-layout>
 <title>Register</title>
     <h1>Register your credentials.</h1>
-    @if ($errors->any())
-        <div>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @elseif (session('error'))
-        <div>
-            {{  session('error') }}
-        </div>
-    @endif
+    <x-error-status/>
     <div>
         <form action="{{ route('registering') }}" method="post">
             @csrf

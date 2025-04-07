@@ -2,22 +2,23 @@
     
 <title>Home</title>
     <h1>This is a Home Page</h1>
-    @if (session('success'))
-        <div>
-            {{ session('success') }}
-        </div>
-    @endif
+    <x-error-status/>
     <div class="task tab">
         <h3>Your tasks:</h3>
         @if ($tasks)
-            @foreach ($tasks as $task)
-                {{ $task }}
-            @endforeach
+            <ul style="">
+                @foreach ($tasks as $task)
+                    <li><a href="/home/{{ $task->task_name }}">{{ $task->task_name  }}</a></li> 
+                    {{ $task->description }} <br>
+                    {{ $task->end_date_time }}
+                @endforeach
+            </ul>
         @else
             <h6>You have no tasks.</h>
         @endif
     </div>
-    <button type="button" name="action" value="create">Create New Task</button>
+    @csrf
+    <a href="{{ route('create.task') }}"><button>Create New Task</button></a>
     <div> <br>
         <form action="{{ route('logging.out') }}" method="post">
             @csrf

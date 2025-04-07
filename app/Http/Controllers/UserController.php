@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Traits\ToStringFormat;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserCredentials;
-use App\Http\Controllers\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
-use function Laravel\Prompts\error;
 
 class UserController extends Controller
 {
@@ -26,20 +22,23 @@ class UserController extends Controller
     public function login(Request $request) {
         $credentials = $request->validate([
             'username' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required'
         ]);
+        // Auth::login($credentials);
+        // dd('bet');
         try {
-            $received = UserCredentials::get(['username', 'password'])
-                        ->where('username', $credentials['username'])
-                        ->firstOrFail()->toArray();
+            $received = UserCredentials::get()
+            ->where('username', $credentials['username'])
+            ->firstOrFail()->toArray();
             if(Hash::check($credentials['password'], $received['password'])) {
+                $request->headers->set('userId', $received['id']);              
                 return redirect()->intended('home');
             }
             else
                 return redirect()->back()->with('error', 'Invalid username/password.');
         } 
         catch (\Exception $e) {
-            return redirect()->back()->with('error', 'No username found. Please register');
+            return redirect()->back()->with('error', 'Invalid username/password');
         }
     }
 
@@ -50,14 +49,14 @@ class UserController extends Controller
     // Logging out
     public function logout() {
         // Auth::logout();
-        return redirect()->intended()->with('loggedOut', 'You have logged out.');
+        return redirect()->intended()->with('status', 'You have logged out.');
     }
 
     /*
     * @Register page
     */
     public function registerview() {
-        return view('components.register');
+        return view('register');
     }
     
     // Registering
@@ -68,17 +67,17 @@ class UserController extends Controller
             'password' =>  'required|confirmed',
         ]);
         if(UserCredentials::where('username', $request->username)->exists()) {
-            return redirect()->back()->with('error', 'Username already exists. Enter new one');
+            return redirect()->back()->with('status', 'Username already exists. Enter new one');
         }
         if(UserCredentials::where('email', $request->email)->exists()) {
-            return redirect()->back()->with('error', 'Email already exists. Enter new one');
+            return redirect()->back()->with('status', 'Email already exists. Enter new one');
         }
-        $user = new  UserCredentials();
-        $user->username = $request->username;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $user = UserCredentials::create([
+            'username' => $request['username'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password'])
+        ]);
         return redirect()->intended('home')
-            ->with('success', 'Registration successfully.');
+            ->with('status', 'Registration successfully.');
     }
 }

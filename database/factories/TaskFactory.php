@@ -17,7 +17,10 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => 1,
+            'task_name' => fake()->word(),
+            'description' => fake()->sentence(),
+            'end_date_time' => fake()->dateTimeThisMonth()
         ];
     }
 }

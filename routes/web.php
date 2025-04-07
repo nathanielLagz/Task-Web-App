@@ -30,25 +30,27 @@ use App\Http\Middleware\UserIsLoggedIn;
 // require __DIR__.'/auth.php';
 
 /*
- * @Login page routes
+ *  @User routes
  */
-Route::get('/', [UserController::class, 'loginview'])
-        ->name('login.page');  
-Route::post('/login', [UserController::class, 'login'])
-    ->name('logging.in');
-Route::get('/register',[UserController::class, 'registerview'])
-    ->name('register.page');
-route::post('/register', [UserController::class ,'store'])
-    ->name('registering');
+Route::controller(UserController::class)->group(function() {
+    Route::get('/',  'loginview')->name('loginPage');  
+    Route::post('/login',  'login')->name('logging.in');
+    Route::get('/register', 'registerview')->name('register.page');
+    Route::post('/register',  'store')->name('registering');
+    Route::post('/logout',  'logout')->name('logging.out');
+});
 
     /* 
-    * @Home routes
+    * @Home task routes
     */
-Route::get('/home', [TaskController::class, 'index'])
-->middleware(UserIsLoggedIn::class)
-->name('home.page');
+Route::controller(TaskController::class)->group(function () {
+    Route::get('/home', 'index')->name('home.page');
+    Route::get('home/create', 'createTask')->name('create.task');
+    Route::post('home/create', 'create')->name('creating.task');
+    Route::get('home/{$task}', 'read')->name('read.task');
+    Route::patch('home/{$task}/update', 'update')->name('update.task');
+    Route::delete('home/{$task}/dete', 'destroy')->name('delete.task');
+});
 // Route::get('/home', [TaskController::class, 'index'])
 //     ->middleware(UserIsLoggedIn::class)
 //     ->name('home.page');
-Route::post('/logout', [UserController::class, 'logout'])
-    ->name('logging.out');

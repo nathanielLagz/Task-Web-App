@@ -10,25 +10,33 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     public function index() {
-        $tasks = Task::all();
-        // dd($tasks);
-        return view('home', ['tasks' => Task::get('task_name')]);
+        // user_id is hardcoded
+        return view('home', ['tasks' => Task::where('user_id', 1)->get()]);
+    }
+
+    public function createTask() {
+        return view('tasks');
     }
 
     public function create(Request $request) {
-
+        $task = $request->validate([
+            'task_name' => 'required'
+        ]);
+        Task::create($task);
     }
 
     public function read(Request $request) {
-
+        Task::get();
+        return view('taskview');
     }
 
     public function update(Request $request) {
-
+        Task::update();
     }
     
-    public function delete(Request $request) {
-
+    public function destroy(Request $request) {
+        Task::destroy(1);
+        return redirect()->back()->with('status', 'Task has been deleted.');
     }
     
 }

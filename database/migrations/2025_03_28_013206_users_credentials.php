@@ -16,19 +16,10 @@ return new class extends Migration
             $table->string('email')->unique()->nullable(false);
             $table->timestamps();
         });
-
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->foreignId('user_id');
-            $table->foreign('user_id')->references('id')->on('users_credentials');
-            $table->string('task_name')->unique()->nullable(false);
-            $table->text('description')->nullable();
-            $table->dateTime('end_date_time')->nullable();
-        });
     }
 
     public function down(): void
     {   
-        Schema::dropIfExists('tasks');
         Schema::dropIfExists('users_credentials');
     }
 };

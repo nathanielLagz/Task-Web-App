@@ -2,10 +2,16 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\UserCredentials;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+
+use function Laravel\Prompts\error;
 
 class UserIsLoggedIn
 {
@@ -16,6 +22,9 @@ class UserIsLoggedIn
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+        // if(Auth::user())
+        if(session('id'))
+            return $next($request);
+        return response('/', 401);
     }
 }

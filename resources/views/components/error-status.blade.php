@@ -1,7 +1,7 @@
 <div class="status/errors" style="font-style: italic; color: red;">
     @if (session()->hasAny(['status','error']))
         {{ session('status') !== null? session('status') : session(key: 'error') }}
-    @elseif($errors->any() && request()->is('register'))
+    @elseif($errors->any() && request()->is(['register', 'home/create']))
         <ul>
         @foreach ($errors->all() as $error)
             <li> {{ $error }} </li>

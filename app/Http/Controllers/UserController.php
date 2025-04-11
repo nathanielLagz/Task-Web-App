@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class UserController extends Controller
 {
     /*
-    * @Login page
+    * Login page
     */
     public function loginview() {
         return view('login');
@@ -24,21 +24,27 @@ class UserController extends Controller
             'username' => 'required|string',
             'password' => 'required'
         ]);
-        // Auth::login($credentials);
-        // dd('bet');
+        // if(Auth::attempt($credentials)){
+            
+        //     Auth::login();
+        //     return redirect()->intended('home');
+        // }
+        // else
+        //     return redirect()->back()->with('error', 'Invalid username/password');
         try {
             $received = UserCredentials::get()
             ->where('username', $credentials['username'])
             ->firstOrFail()->toArray();
             if(Hash::check($credentials['password'], $received['password'])) {
-                $request->headers->set('userId', $received['id']);              
-                return redirect()->intended('home');
+                cookie('userid', $received['id']);
+                session()->put('id', $received['id']);
+                return redirect('home');
             }
             else
                 return redirect()->back()->with('error', 'Invalid username/password.');
         } 
         catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Invalid username/password');
+            return redirect()->back()->with('error', '...Invalid username/password...');
         }
     }
 
@@ -49,6 +55,7 @@ class UserController extends Controller
     // Logging out
     public function logout() {
         // Auth::logout();
+        session()->remove('id');
         return redirect()->intended()->with('status', 'You have logged out.');
     }
 
@@ -61,7 +68,7 @@ class UserController extends Controller
     
     // Registering
     public function store(Request $request) {
-        $request->validate([
+        $user = $request->validate([
             'email' => 'required|string|email',
             'username' => 'required',
             'password' =>  'required|confirmed',
@@ -72,12 +79,13 @@ class UserController extends Controller
         if(UserCredentials::where('email', $request->email)->exists()) {
             return redirect()->back()->with('status', 'Email already exists. Enter new one');
         }
-        $user = UserCredentials::create([
-            'username' => $request['username'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password'])
-        ]);
+        $user['password'] = Hash::make($user['password']);
+        UserCredentials::create($user);
         return redirect()->intended('home')
             ->with('status', 'Registration successfully.');
+    }
+
+    public function destroy(UserCredentials $userCredentials) {
+        
     }
 }

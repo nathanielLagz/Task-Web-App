@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->foreignId('user_id');
-            $table->foreign('user_id')->references('id')->on('users_credentials');
+            $table->id()->primary();
             $table->string('task_name')->unique()->nullable(false);
             $table->text('description')->nullable();
             $table->dateTime('end_date_time')->nullable();
+            $table->foreignId('user_id');
+            $table->foreign('user_id')->references('id')->on('users_credentials');
         });
     }
 

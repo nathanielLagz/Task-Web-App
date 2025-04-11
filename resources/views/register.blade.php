@@ -1,5 +1,5 @@
 <x-layout>
-<title>Register</title>
+<x-slot:title>Register</x-slot:title>
     <h1>Register your credentials.</h1>
     <x-error-status/>
     <div>
@@ -20,7 +20,7 @@
             <button type="submit">Register</button>
         </form>
     </div>
-    <div>
-        <a href="{{ route('login.page') }}">Back to Login</a>
+    <div class="">
+        <a href="{{ route('loginPage') }}"><button>Back to Login</button></a>
     </div>
 </x-layout>
